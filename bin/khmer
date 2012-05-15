@@ -1,0 +1,30 @@
+#!/bin/bash
+
+PYTHON=python26
+
+MY_DIR="$( cd "$( dirname "$0" )" && pwd )"/..
+export PYTHONPATH="$MY_DIR/python"
+
+cmd=$1
+shift
+
+help() {
+  echo "Usage: $0 <command> [args]"
+  echo "  where <command> is one of"
+  echo "    --help-long"
+  ls "$MY_DIR/scripts/"*.py | sed -re 's/.*\/(.*)/    \1/'
+}
+
+case "$cmd" in
+  ""|"-h"|"--help") help;;
+  "--help-long") cat "$MY_DIR/doc/scripts.txt";;
+  *) 
+    binary="$MY_DIR/scripts/$cmd"
+    if [ ! -r "$binary" ]; then
+      echo "Unknown command '$cmd'"
+      help
+      exit 1
+    fi
+    exec $PYTHON "$binary" $@
+    ;;
+esac
